@@ -65,6 +65,7 @@ ggplot(ma_income) +
   theme(
     plot.title = element_text(face = "bold", size = 14),
     plot.subtitle = element_text(size = 12),
+    plot.caption = element_text(face = "bold", size = 9),        # Bold source
     legend.position = "right"
   )
 ```
