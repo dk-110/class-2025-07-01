@@ -1,5 +1,5 @@
 ---
-title: "Median Household Income Across Massachusetts Census Tracts (2021)"
+title: "Median Household Income"
 execute: 
   echo: false
 ---
