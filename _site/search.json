@@ -5,12 +5,5 @@
     "title": "Median Household Income",
     "section": "",
     "text": "Visualizing income disparities using data from the American Community Survey 5-Year Estimates\n\n\n\n\n\n\nThis choropleth map displays the median household income across census tracts in the state of Massachusetts, based on the 2021 American Community Survey (ACS) 5-Year Estimates. Each tract is shaded according to its estimated median income level, with darker colors representing higher income areas. This visualization highlights spatial disparities in income distribution, allowing for quick identification of wealthier versus economically disadvantaged regions. Urban centers like Boston, for example, often exhibit both high-income neighborhoods and adjacent low-income areas, reflecting economic segregation at a granular geographic scale. The map serves as a useful tool for policymakers, researchers, and planners seeking to understand income inequality and target economic interventions more effectively."
-  },
-  {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
-    "section": "",
-    "text": "About this site"
   }
 ]

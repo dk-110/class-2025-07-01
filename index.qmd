@@ -14,7 +14,6 @@ Visualizing income disparities using data from the American Community Survey 5-Y
 #| message: false
 #| warning: false
 
-
 # Disable everything possible
 Sys.setenv(VROOM_SHOW_PROGRESS = "false")
 options(cli.progress_show_after = Inf)
@@ -26,12 +25,6 @@ library(tidycensus)
 library(tigris)
 library(sf)
 library(leaflet)
-
-
-# Disable everything possible
-Sys.setenv(VROOM_SHOW_PROGRESS = "false")
-options(cli.progress_show_after = Inf)
-
 
 # Optional: Set your Census API key if not already set
 # census_api_key("your_api_key", install = TRUE, overwrite = TRUE)
@@ -49,15 +42,14 @@ ma_income <- get_acs(
   st_transform(crs = 4326)  # Transform to WGS84 (leaflet requires this)
 
 
-# Create color palette
+# Define color palette BEFORE using it
 pal <- colorNumeric(
   palette = "plasma",
   domain = ma_income$median_income,
   na.color = "grey90"
 )
 
-
-# Build interactive leaflet map
+# Build interactive map
 leaflet(ma_income) %>%
   addProviderTiles("CartoDB.Positron") %>%
   addPolygons(
@@ -65,28 +57,16 @@ leaflet(ma_income) %>%
     color = "#444444",
     weight = 0.5,
     fillOpacity = 0.8,
+    popup = ~paste0(
+      "<strong>", NAME, "</strong><br>",
+      "<b>Median Income:</b> $", formatC(median_income, format = "d", big.mark = ",")
+    ),
     highlightOptions = highlightOptions(
       weight = 2,
       color = "#666",
       fillOpacity = 0.9,
       bringToFront = TRUE
-    ),
-    popup = ~paste0(
-      "<strong>", NAME, "</strong><br>",
-      "<b>Median Income:</b> $", formatC(median_income, format = "d", big.mark = ",")
-    ),
-    labelOptions = labelOptions(
-      direction = "auto",
-      textsize = "13px",
-      style = list("font-family" = "Arial", "background" = "white")
     )
-  ) %>%
-  addControl(
-    html = "<div style='text-align:center;'>
-              <h3 style='margin:0;'>Median Household Income in Massachusetts</h3>
-              <p style='margin:0; font-size:14px;'>American Community Survey (ACS) 5-Year Estimates, 2021</p>
-            </div>",
-    position = "topright"
   ) %>%
   addLegend(
     pal = pal,
@@ -97,10 +77,16 @@ leaflet(ma_income) %>%
     labFormat = labelFormat(prefix = "$")
   ) %>%
   addControl(
+    html = "<div style='text-align:center;'>
+              <h3 style='margin:0;'>Median Household Income in Massachusetts</h3>
+              <p style='margin:0; font-size:14px;'>ACS 2021 5-Year Estimates</p>
+            </div>",
+    position = "topright"
+  ) %>%
+  addControl(
     html = "<p style='font-size:12px; margin:4px;'><strong>Source:</strong> U.S. Census Bureau via tidycensus</p>",
     position = "bottomleft"
   )
-
 ```
 This choropleth map displays the median household income across census tracts in the state of Massachusetts, based on the 2021 American Community Survey (ACS) 5-Year Estimates. Each tract is shaded according to its estimated median income level, with darker colors representing higher income areas. This visualization highlights spatial disparities in income distribution, allowing for quick identification of wealthier versus economically disadvantaged regions. Urban centers like Boston, for example, often exhibit both high-income neighborhoods and adjacent low-income areas, reflecting economic segregation at a granular geographic scale. The map serves as a useful tool for policymakers, researchers, and planners seeking to understand income inequality and target economic interventions more effectively.
 
