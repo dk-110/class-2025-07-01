@@ -1,7 +1,71 @@
 ---
-title: "Median Income"
+title: "Median Household Income Across Massachusetts Census Tracts (2021)"
+execute: 
+  echo: false
 ---
 
-This is a Quarto website.
+Visualizing income disparities using data from the American Community Survey 5-Year Estimates
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+```{r}
+#| message: false
+#| warning: false
+
+# Disable everything possible
+Sys.setenv(VROOM_SHOW_PROGRESS = "false")
+options(cli.progress_show_after = Inf)
+
+library(tidyverse)
+library(tidycensus)
+library(tigris)
+library(sf)
+
+# Get ACS data WITHOUT geometry
+ma_income_raw <- suppressMessages(
+  get_acs(
+    geography = "tract",
+    variables = "B19013_001",
+    state = "MA",
+    year = 2021,
+    geometry = FALSE
+  )
+)
+
+# Get geometry separately WITHOUT progress bar
+tract_shapes <- tigris::tracts(
+  state = "MA",
+  year = 2021,
+  cb = TRUE,
+  class = "sf",
+  progress_bar = FALSE
+)
+
+# Join and clean
+ma_income <- left_join(tract_shapes, ma_income_raw, by = "GEOID") %>%
+  rename(median_income = estimate)
+
+# Plot
+ggplot(ma_income) +
+  geom_sf(aes(fill = median_income), color = NA) +
+  scale_fill_viridis_c(
+    option = "plasma",
+    na.value = "grey90",
+    name = "Median Income ($)",       # Legend title
+    labels = scales::label_dollar(),  # Format as currency
+    guide = guide_colorbar(
+      barwidth = 0.5,
+      barheight = 10
+    )
+  ) +
+  labs(
+    title = "Median Household Income Across Massachusetts Census Tracts (2021)",
+    subtitle = "Data from ACS 2021 5-Year Estimates",
+    caption = "Source: U.S. Census Bureau via tidycensus"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 14),
+    plot.subtitle = element_text(size = 12),
+    legend.position = "right"
+  )
+```
+This choropleth map displays the median household income across census tracts in the state of Massachusetts, based on the 2021 American Community Survey (ACS) 5-Year Estimates. Each tract is shaded according to its estimated median income level, with darker colors representing higher income areas. This visualization highlights spatial disparities in income distribution, allowing for quick identification of wealthier versus economically disadvantaged regions. Urban centers like Boston, for example, often exhibit both high-income neighborhoods and adjacent low-income areas, reflecting economic segregation at a granular geographic scale. The map serves as a useful tool for policymakers, researchers, and planners seeking to understand income inequality and target economic interventions more effectively.
